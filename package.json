@@ -1,6 +1,6 @@
 {
-  "name": "@segment/consent-manager",
-  "version": "5.6.0",
+  "name": "@chordcommerce/consent-manager",
+  "version": "1.0.0",
   "description": "Drop-in consent management plugin for analytics.js",
   "keywords": [
     "gdpr",
@@ -8,7 +8,7 @@
     "analytics",
     "analytics.js"
   ],
-  "repository": "segmentio/consent-manager",
+  "repository": "chordcommerce/consent-manager",
   "license": "MIT",
   "main": "commonjs/index.js",
   "module": "esm/index.js",
@@ -156,7 +156,7 @@
   },
   "storybook-deployer": {
     "gitUsername": "GitHub Pages Bot",
-    "gitEmail": "friends@segment.com",
+    "gitEmail": "friends@chord.co",
     "commitMessage": "Deploy Storybook to GitHub Pages [skip ci]"
   }
 }
