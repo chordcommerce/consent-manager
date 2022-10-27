@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { loadPreferences, savePreferences } from './preferences'
-import fetchDestinations from './fetch-destinations'
+import fetchDestinations, { formatDestinations } from './fetch-destinations'
 import conditionallyLoadAnalytics from './analytics'
 import {
   Destination,
@@ -32,6 +32,12 @@ interface Props {
 
   /** A list of other write keys you may want to provide */
   otherWriteKeys?: string[]
+
+  /**
+   * A list of destinations that are fetched from elsewhere. ie - server destinations fetched
+   * manually to avoid publishing the server-side write key in your frontend code
+   */
+  otherDestinations?: Destination[]
 
   cookieDomain?: string
   cookieName?: string
@@ -115,6 +121,7 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
 
   static defaultProps = {
     otherWriteKeys: [],
+    otherDestinations: [],
     onError: undefined,
     shouldRequireConsent: () => true,
     initialPreferences: {},
@@ -176,24 +183,41 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
     }
   }
 
-  initialise = async () => {
+  async componentWillReceiveProps(nextProps) {
+    if (nextProps.otherDestinations.length !== (this.props.otherDestinations || []).length) {
+      await this.initialise(nextProps)
+    }
+  }
+
+  initialise = async (nextProps = undefined) => {
     const {
       writeKey,
       otherWriteKeys = ConsentManagerBuilder.defaultProps.otherWriteKeys,
+      otherDestinations = ConsentManagerBuilder.defaultProps.otherDestinations,
       shouldRequireConsent = ConsentManagerBuilder.defaultProps.shouldRequireConsent,
       initialPreferences,
       mapCustomPreferences,
       defaultDestinationBehavior,
       cookieName,
       cdnHost = ConsentManagerBuilder.defaultProps.cdnHost
-    } = this.props
+    } = nextProps || this.props
 
     // TODO: add option to run mapCustomPreferences on load so that the destination preferences automatically get updated
     let { destinationPreferences, customPreferences } = loadPreferences(cookieName)
-    const [isConsentRequired, destinations] = await Promise.all([
+    const [isConsentRequired, fetchedDestinations] = await Promise.all([
       shouldRequireConsent(),
       fetchDestinations(cdnHost, [writeKey, ...otherWriteKeys])
     ])
+
+    let destinations = fetchedDestinations
+    if (otherDestinations.length) {
+      formatDestinations(otherDestinations)
+      const uniqueOtherDestinations = otherDestinations.filter(
+        od => !destinations.some(d => od.id === d.id)
+      )
+      destinations = [...destinations, ...uniqueOtherDestinations]
+    }
+
     const newDestinations = getNewDestinations(destinations, destinationPreferences || {})
     const workspaceAddedNewDestinations =
       destinationPreferences &&
@@ -201,17 +225,17 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
       newDestinations.length > 0
 
     let preferences: CategoryPreferences | undefined
-    const initialPrefencesHaveValue = Object.values(initialPreferences || {}).some(
+    const initialPreferencesHaveValue = Object.values(initialPreferences || {}).some(
       v => v === true || v === false
     )
-    const emptyCustomPreferecences = Object.values(customPreferences || {}).every(
+    const emptyCustomPreferences = Object.values(customPreferences || {}).every(
       v => v === null || v === undefined
     )
 
     if (mapCustomPreferences) {
       preferences = customPreferences || initialPreferences || {}
       if (
-        (initialPrefencesHaveValue && emptyCustomPreferecences) ||
+        (initialPreferencesHaveValue && emptyCustomPreferences) ||
         (defaultDestinationBehavior === 'imply' && workspaceAddedNewDestinations)
       ) {
         const mapped = mapCustomPreferences(destinations, preferences)
