@@ -153,10 +153,5 @@
     "semi": false,
     "singleQuote": true,
     "printWidth": 100
-  },
-  "storybook-deployer": {
-    "gitUsername": "GitHub Pages Bot",
-    "gitEmail": "friends@chord.co",
-    "commitMessage": "Deploy Storybook to GitHub Pages [skip ci]"
   }
 }

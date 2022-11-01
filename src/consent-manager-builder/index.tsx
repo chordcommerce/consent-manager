@@ -183,12 +183,6 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
     }
   }
 
-  async componentWillReceiveProps(nextProps) {
-    if (nextProps.otherDestinations.length !== (this.props.otherDestinations || []).length) {
-      await this.initialise(nextProps)
-    }
-  }
-
   initialise = async (nextProps = undefined) => {
     const {
       writeKey,
