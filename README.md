@@ -359,6 +359,7 @@ loading the out of the box Consent Manager. In [this demo](https://codepen.io/sa
 - [closeBehavior](#closebehavior)
 - [implyConsentOnInteraction](#implyconsentoninteraction)
 - [defaultDestinationBehavior](#defaultdestinationbehavior)
+- [otherDestinations](#otherdestinations)
 - [cookieDomain](#cookiedomain)
 - [bannerContent](#bannercontent)
 - [bannerSubContent](#bannersubcontent)
@@ -458,6 +459,27 @@ Options:
 - `imply` - When you add new destinations, they are enabled or disabled based on the category to which they belong and the user's previous consent to that category.
   For example, if a user already consented to the `marketingAndAnalytics` category, and you add a new destination which is in the `Analytics` category, that destination will be enabled until the user updates their consent selections.
 - `ask` - When you add new destinations, the Consent Manager automatically opens the preferences dialog on initialization, and asks the user for their consent again.
+
+##### otherDestinations
+
+**Type**: `array<object>`
+**Default**: `undefined`
+
+```typescript
+;[
+  {
+    category: 'Analytics',
+    creationName: 'Google Analytics',
+    description: 'Google Universal Analytics is the most popular analytics tool for the web. ',
+    name: 'Google Universal Analytics',
+    website: 'http://google.com/analytics'
+  }
+]
+```
+
+A way to include destinations from write keys you may not want to publish with your client code. Can be seen as an alternative to using the `otherWriteKeys` prop. These destinations will be merged with those fetched internally using the `writeKey` prop.
+
+_Note: When using this prop, it is important that your list of `otherDestinations` is populated **before** rendering the `<ConsentManager />` component. Otherwise, these destinations will not be included._
 
 ##### cookieDomain
 
@@ -708,6 +730,7 @@ export default function() {
 - [shouldRequireConsent](#shouldrequireconsent-1)
 - [initialPreferences](#initialpreferences-1)
 - [defaultDestinationBehavior](#defaultdestinationbehavior-1)
+- [otherDestinations](#otherdestinations-1)
 - [mapCustomPreferences](#mapcustompreferences)
 - [cookieDomain](#cookiedomain-1)
 
@@ -717,34 +740,34 @@ export default function() {
 
 The render props function that returns your UI.
 
-##### writeKey
+##### writeKey-1
 
 **Type**: `string`
 
 The write key analytics.js should be loaded with.
 
-##### otherWriteKeys
+##### otherWriteKeys-1
 
 **Type**: `array<string>`
 **Default**: `[]`
 
 Other write keys that you want to load destination information for. This is useful for including your server-side destinations in the consent manager, so that you can easily apply the user's tracking preferences to your server-side analytics too. _No data will be sent to these write keys._
 
-##### shouldRequireConsent
+##### shouldRequireConsent-1
 
 **Type**: `function`
 **Default**: `() => true`
 
 Callback function that determines if consent is required before tracking can begin. Return `true` to show the consent banner and wait for consent (if no consent has been given yet). Return `false` to not show the consent banner and start tracking immediately (unless the user has opted out). The function can return a `Promise` that resolves to a boolean.
 
-##### initialPreferences
+##### initialPreferences-1
 
 **Type**: `object`
 **Default**: `{}`
 
 The initial value of the preferences. By default it should be an object map of `{destinationId: true|false}`. If you're using [mapCustomPreferences][] it should be an object map of your custom preferences' default values.
 
-##### defaultDestinationBehavior
+##### defaultDestinationBehavior-1
 
 **Type**: `string`
 **Default**: `disable`
@@ -763,6 +786,27 @@ Options:
 
 This setting also also affects [Replays](https://segment.com/docs/guides/what-is-replay/) to new destinations. Only `disable` and `enable` apply to these replays. If you set `defaultDestinationBehavior` to `imply`, Segment interprets this as `enable` during a replay.
 
+##### otherDestinations-1
+
+**Type**: `array<object>`
+**Default**: `undefined`
+
+```typescript
+;[
+  {
+    category: 'Analytics',
+    creationName: 'Google Analytics',
+    description: 'Google Universal Analytics is the most popular analytics tool for the web. ',
+    name: 'Google Universal Analytics',
+    website: 'http://google.com/analytics'
+  }
+]
+```
+
+A way to include destinations from write keys you may not want to publish with your client code. Can be seen as an alternative to using the `otherWriteKeys` prop. These destinations will be merged with those fetched internally using the `writeKey` prop.
+
+_Note: When using this prop, it is important that your list of `otherDestinations` is populated **before** rendering the `<ConsentManagerBuilder />` component. Otherwise, these destinations will not be included._
+
 ##### mapCustomPreferences
 
 **Type**: `function`
@@ -770,7 +814,7 @@ This setting also also affects [Replays](https://segment.com/docs/guides/what-is
 
 Callback function allows you to use a custom preferences format (e.g: categories) instead of the default destination based one. The function gets called during the consent saving process and gets passed `(destinations, preferences)`. The function should return `{destinationPreferences, customPreferences}` where `destinationPreferences` is your custom preferences mapped to the destinations format (`{destiantionId: true|false}`) and `customPreferences` is your custom preferences if you changed them in the callback (optional).
 
-##### cookieDomain
+##### cookieDomain-1
 
 **Type**: `string`
 **Default**: the [top most domain][top-domain] and all sub domains
