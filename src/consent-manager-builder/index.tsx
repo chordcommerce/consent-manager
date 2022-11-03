@@ -183,7 +183,7 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
     }
   }
 
-  initialise = async (nextProps = undefined) => {
+  initialise = async () => {
     const {
       writeKey,
       otherWriteKeys = ConsentManagerBuilder.defaultProps.otherWriteKeys,
@@ -194,7 +194,7 @@ export default class ConsentManagerBuilder extends Component<Props, State> {
       defaultDestinationBehavior,
       cookieName,
       cdnHost = ConsentManagerBuilder.defaultProps.cdnHost
-    } = nextProps || this.props
+    } = this.props
 
     // TODO: add option to run mapCustomPreferences on load so that the destination preferences automatically get updated
     let { destinationPreferences, customPreferences } = loadPreferences(cookieName)
