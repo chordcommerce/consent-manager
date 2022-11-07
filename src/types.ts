@@ -107,6 +107,7 @@ export interface PreferenceDialogTemplate {
 export interface ConsentManagerProps {
   writeKey: string
   otherWriteKeys?: string[]
+  otherDestinations?: Destination[]
   shouldRequireConsent?: () => Promise<boolean> | boolean
   implyConsentOnInteraction?: boolean
   cookieDomain?: string

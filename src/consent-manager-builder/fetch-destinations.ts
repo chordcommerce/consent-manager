@@ -4,6 +4,19 @@ import sortedUniqBy from 'lodash/sortedUniqBy'
 import sortBy from 'lodash/sortBy'
 import { Destination } from '../types'
 
+export function formatDestinations(destinations) {
+  // Rename creationName to id to abstract the weird data model
+  for (const destination of destinations) {
+    // Because of the legacy Fullstory integration the creationName for this integration is the `name`
+    if (destination.name === 'Fullstory (Actions)') {
+      destination.id = destination.name
+    } else {
+      destination.id = destination.creationName
+    }
+    delete destination.creationName
+  }
+}
+
 async function fetchDestinationForWriteKey(
   cdnHost: string,
   writeKey: string
@@ -18,16 +31,7 @@ async function fetchDestinationForWriteKey(
 
   const destinations = await res.json()
 
-  // Rename creationName to id to abstract the weird data model
-  for (const destination of destinations) {
-    // Because of the legacy Fullstory integration the creationName for this integration is the `name`
-    if (destination.name === 'Fullstory (Actions)') {
-      destination.id = destination.name
-    } else {
-      destination.id = destination.creationName
-    }
-    delete destination.creationName
-  }
+  formatDestinations(destinations)
 
   return destinations
 }
